@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.account.Mapper.AccountMapper">
+    <select id="getAccountById" parameterType="java.lang.Integer" resultType="com.market.account.Dto.AccountDTO">
+        SELECT
+            account_id, login_account,login_ip,register_ip,register_phone,register_email,register_time
+        FROM
+            sys_account
+        WHERE
+            account_id = #{accountId}
+    </select>
+
+    <select id="getAccountByContact" parameterType="java.lang.String" resultType="com.market.account.Dto.AccountDTO">
+        SELECT
+            account_id, login_account,login_ip,register_ip,register_phone,register_email,register_time
+        FROM
+            sys_account
+        WHERE
+            1 = 1
+        <choose>
+            <when test="contactType == '0'">
+                login_account = #{accountContact}
+            </when>
+            <when test="contactType == 1">
+                register_phone = #{accountContact}
+            </when>
+            <when test="contactType == 2">
+                register_email = #{accountContact}
+            </when>
+        </choose>
+    </select>
+
+    <select id="getAllLoginAccount" resultType="java.lang.String">
+        SELECT
+            login_account
+        FROM
+            sys_account
+    </select>
+
+    <select id="getAllContactByType" parameterType="java.lang.Integer" resultType="com.market.account.Dto.AccountDTO">
+        SELECT
+        <choose>
+            <when test="registerType == 1">
+                register_phone
+            </when>
+            <when test="registerType == 2">
+                register_mail
+            </when>
+        </choose>
+        FROM
+        sys_account
+    </select>
+
+    <select id="getAccountByLoginAccount" parameterType="java.lang.String" resultType="com.market.account.Dto.AccountDTO">
+        SELECT
+            account_id, login_account,login_ip,register_ip,register_phone,register_email,register_time
+        FROM
+            sys_account
+        WHERE
+            1 = 1
+        <choose>
+            <when test="loginType == 0">
+                login_account = #{loginKey}
+            </when>
+            <when test="loginType == 1">
+                register_phone = #{loginKey}
+            </when>
+            <when test="loginType == 2">
+                register_email = #{loginKey}
+            </when>
+        </choose>
+        AND login_password = #{loginValue}
+    </select>
+
+    <select id="registerAccount" parameterType="com.market.account.Entity.AccountEntity">
+        INSERT INTO
+            sys_account (
+            account_id,
+            login_account,
+            login_password,
+            login_ip,
+            register_ip,
+            register_phone,
+            register_email,
+            register_time,
+            last_login_time
+        )
+        VALUES (
+            #{accountId},
+            #{loginAccount},
+            #{loginPassword},
+            #{loginIp},
+            #{registerIp},
+            #{registerPhone},
+            #{registerEmail},
+            #{registerTime},
+            #{lastLoginTime}
+        )
+    </select>
+
+    <select id="updateAccount" parameterType="com.market.account.Entity.AccountEntity">
+        UPDATE
+            sys_account
+        SET
+        <if test="loginPassword != null">
+            login_password = #{loginPassword},
+        </if>
+        <if test="loginIp != null">
+            login_ip = #{loginIp},
+        </if>
+        <if test="lastLoginTime != null">
+            last_login_time = #{lastLoginTime},
+        </if>
+        <if test="registerPhone != null">
+            register_phone = #{registerPhone},
+        </if>
+        <if test="registerEmail != null">
+            register_email = #{registerEmail},
+        </if>
+        WHERE
+            account_id = #{accountId}
+    </select>
+</mapper>
