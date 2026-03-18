@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.account.Mapper.UserMapper">
+
+    <select id="getUserByAccountId" parameterType="java.lang.Integer" resultType="com.market.account.Dto.UserDTO">
+        SELECT
+            *
+        FROM
+            sys_user
+        WHERE
+            account_id = #{accountId}
+    </select>
+
+    <select id="getBatchUserByUserId" resultType="com.market.account.Dto.UserDTO">
+        SELECT
+            *
+        FROM
+            sys_user
+        WHERE
+            user_id in
+        <foreach collection="list" open="(" close=")" separator="," item="userId" index="index">
+            #{userIdList}
+        </foreach>
+    </select>
+
+    <select id="getUserByUserId" parameterType="java.lang.Integer" resultType="com.market.account.Dto.UserDTO">
+        SELECT
+            *
+        FROM
+            sys_user
+        WHERE
+            user_id = #{userId}
+    </select>
+
+    <select id="getUsersByLevel" resultType="com.market.account.Dto.UserDTO">
+        SELECT
+            *
+        FROM
+            sys_user
+        WHERE
+            level in
+        <foreach collection="list" open="(" close=")" separator="," item="level" index="index">
+            #{levelList}
+        </foreach>
+    </select>
+
+    <select id="addUserLevelPoint" resultType="com.market.account.Dto.UserDTO">
+        WITH updated AS (
+        UPDATE
+            sys_user
+        SET level_point = level_point + #{addPoint}
+        WHERE user_id = #{userId} RETURNING *
+        )
+        SELECT * FROM updated
+    </select>
+
+    <select id="addBatchUserLevelPoint" resultType="com.market.account.Dto.UserDTO">
+        WITH updated AS (
+        UPDATE
+            sys_user
+        SET level_point = level_point + #{addPoint}
+        WHERE user_id in
+        <foreach collection="list" open="(" close=")" separator="," item="userId" index="index">
+            #{userIds}
+        </foreach>
+        RETURNING *
+        )
+        SELECT * FROM updated
+    </select>
+
+</mapper>
